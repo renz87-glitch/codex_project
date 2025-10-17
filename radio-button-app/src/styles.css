@@ -1,0 +1,7 @@
+body {
+  margin: 16px;
+}
+
+.btn-group .btn {
+  min-width: 120px;
+}

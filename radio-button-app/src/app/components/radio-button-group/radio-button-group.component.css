@@ -1,0 +1,17 @@
+.btn-group {
+  display: flex;
+}
+
+.btn {
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.btn + .btn {
+  margin-left: -1px;
+}
+
+.btn.disabled {
+  pointer-events: none;
+  opacity: 0.65;
+}
