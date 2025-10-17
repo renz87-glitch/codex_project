@@ -65,22 +65,22 @@ export class App {
   selectedDisabled: string = '';
 
   sizeOptions = [
-    { label: 'Piccolo', value: 'S' },
-    { label: 'Medio', value: 'M' },
-    { label: 'Grande', value: 'L' },
-    { label: 'Extra Large', value: 'XL' }
+    { label: 'Piccolo', value: 'S', tooltip: 'Taglia S: piccola' },
+    { label: 'Medio', value: 'M', tooltip: 'Taglia M: media' },
+    { label: 'Grande', value: 'L', tooltip: 'Taglia L: grande' },
+    { label: 'Extra Large', value: 'XL', tooltip: 'Taglia XL: molto grande' }
   ];
 
   colorOptions = [
-    { label: 'Rosso', value: 'red' },
-    { label: 'Blu', value: 'blue' },
-    { label: 'Verde', value: 'green' },
-    { label: 'Giallo', value: 'yellow' }
+    { label: 'Rosso', value: 'red', tooltip: 'Colore rosso' },
+    { label: 'Blu', value: 'blue', tooltip: 'Colore blu' },
+    { label: 'Verde', value: 'green', tooltip: 'Colore verde' },
+    { label: 'Giallo', value: 'yellow', tooltip: 'Colore giallo' }
   ];
 
   disabledOptions = [
-    { label: 'Opzione 1', value: '1' },
-    { label: 'Opzione 2', value: '2' }
+    { label: 'Opzione 1', value: '1', tooltip: 'Tooltip disabilitato' },
+    { label: 'Opzione 2', value: '2', tooltip: 'Tooltip disabilitato' }
   ];
 }
 

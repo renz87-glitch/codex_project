@@ -14,6 +14,10 @@ stilizzati come pulsanti Bootstrap 3. Il componente supporta `[(ngModel)]` e imp
   l'interfaccia quando l'utente seleziona un'opzione.
 - **Stili**: Bootstrap 3 viene importato tramite CDN in `src/index.html`.
 
+- **Tooltip**: ogni opzione può definire `tooltip` per mostrare un
+  suggerimento nativo del browser passando la proprietà nell'oggetto opzione
+  (es. `{ label: 'Piccolo', value: 'S', tooltip: 'Taglia S: piccola' }`).
+
 Per eseguire l'applicazione è sufficiente installare le dipendenze (`npm install`) e
 lanciare `npm start` all'interno della cartella `radio-button-app`.
 

@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 export interface RadioOption {
   label: string;
   value: any;
+  tooltip?: string;
 }
 
 @Component({
@@ -19,6 +20,8 @@ export interface RadioOption {
         class="btn btn-default"
         [class.active]="isSelected(option.value)"
         [class.disabled]="disabled"
+        [attr.title]="option.tooltip || null"
+        [attr.aria-disabled]="disabled ? true : null"
         [attr.aria-pressed]="isSelected(option.value)"
         [attr.tabindex]="disabled ? -1 : 0"
         (click)="selectOption(option.value)"
@@ -50,7 +53,6 @@ export interface RadioOption {
     .btn.disabled {
       cursor: not-allowed;
       opacity: 0.65;
-      pointer-events: none;
     }
   `],
   providers: [
