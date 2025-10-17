@@ -1,1 +1,8 @@
 /* Add application styles & imports to this file! */
+
+/* Visual feedback for invalid custom control using Angular classes on host */
+app-radio-button-group.ng-invalid.ng-touched .btn-group,
+app-radio-button-group.ng-invalid.ng-dirty .btn-group {
+  box-shadow: 0 0 0 2px #a94442 inset; /* Bootstrap 3 danger color */
+  border-radius: 4px;
+}

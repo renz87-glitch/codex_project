@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { RadioButtonGroupComponent } from './radio-button-group.component';
@@ -6,7 +7,7 @@ import { RadioButtonGroupComponent } from './radio-button-group.component';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [FormsModule, RadioButtonGroupComponent],
+  imports: [CommonModule, FormsModule, RadioButtonGroupComponent],
   template: `
     <div class="container">
       <div class="page-header">
@@ -18,12 +19,20 @@ import { RadioButtonGroupComponent } from './radio-button-group.component';
           <h3 class="panel-title">Seleziona una dimensione</h3>
         </div>
         <div class="panel-body">
+          <form ngNativeValidate #form1="ngForm">
           <app-radio-button-group
             [options]="sizeOptions"
             [(ngModel)]="selectedSize"
+            name="size"
+            [required]="true"
+            [showNotDefined]="true"
           ></app-radio-button-group>
+          </form>
           <div class="alert alert-info" style="margin-top: 15px;" role="alert">
             Dimensione selezionata: <strong>{{ selectedSize || 'Nessuna' }}</strong>
+          </div>
+          <div *ngIf="!form1.valid" class="alert alert-danger" style="margin-top: 15px;" role="alert">
+            Form non valido
           </div>
         </div>
       </div>
@@ -36,6 +45,8 @@ import { RadioButtonGroupComponent } from './radio-button-group.component';
           <app-radio-button-group
             [options]="colorOptions"
             [(ngModel)]="selectedColor"
+            name="color"
+            [showNotDefined]="true"
           ></app-radio-button-group>
           <div class="alert alert-success" style="margin-top: 15px;" role="alert">
             Colore selezionato: <strong>{{ selectedColor || 'Nessuno' }}</strong>
@@ -51,6 +62,7 @@ import { RadioButtonGroupComponent } from './radio-button-group.component';
           <app-radio-button-group
             [options]="disabledOptions"
             [(ngModel)]="selectedDisabled"
+            name="disabledGroup"
             [disabled]="true"
           ></app-radio-button-group>
           <p class="help-block">Questo gruppo di opzioni è disabilitato</p>
@@ -65,6 +77,7 @@ import { RadioButtonGroupComponent } from './radio-button-group.component';
           <app-radio-button-group
             [options]="mixedOptions"
             [(ngModel)]="selectedMixed"
+            name="mixed"
           ></app-radio-button-group>
           <div class="alert alert-info" style="margin-top: 15px;" role="alert">
             Selezione: <strong>{{ selectedMixed || 'Nessuna' }}</strong>
@@ -76,10 +89,10 @@ import { RadioButtonGroupComponent } from './radio-button-group.component';
   `,
 })
 export class App {
-  selectedSize: string = '';
-  selectedColor: string = '';
-  selectedDisabled: string = '';
-  selectedMixed: string = '';
+  selectedSize: any = null;       // null per preselezionare "n.d."
+  selectedColor: any = null;      // null per preselezionare "n.d."
+  selectedDisabled: any = null;
+  selectedMixed: any = null;
 
   sizeOptions = [
     { label: 'Piccolo', value: 'S', tooltip: 'Taglia S: piccola' },
