@@ -13,12 +13,13 @@ export interface RadioOption {
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="btn-group" role="group">
+    <div class="btn-group" role="group" [class.disabled]="disabled" [attr.aria-disabled]="disabled ? true : null">
       <a
         *ngFor="let option of options"
         href="javascript:void(0)"
-        class="btn btn-default"
-        [class.active]="isSelected(option.value)"
+        class="btn"
+        [class.btn-primary]="isSelected(option.value)"
+        [class.btn-default]="!isSelected(option.value)"
         [class.disabled]="disabled"
         [attr.title]="option.tooltip || null"
         [attr.aria-disabled]="disabled ? true : null"
@@ -37,18 +38,12 @@ export interface RadioOption {
       margin-right: -1px;
     }
 
-    .btn.active {
-      background-color: #337ab7;
-      border-color: #2e6da4;
-      color: #fff;
+    .btn-group.disabled,
+    .btn-group.disabled .btn {
+      cursor: not-allowed;
     }
 
-    .btn.active:hover,
-    .btn.active:focus {
-      background-color: #286090;
-      border-color: #204d74;
-      color: #fff;
-    }
+    /* Rely on Bootstrap's btn-default/btn-primary for active state */
 
     .btn.disabled {
       cursor: not-allowed;
