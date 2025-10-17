@@ -1,0 +1,21 @@
+<div class="btn-group" data-toggle="buttons" [attr.aria-disabled]="isGroupDisabled">
+  <a
+    *ngFor="let option of options"
+    href="#"
+    class="btn"
+    [class.btn-primary]="isActive(option)"
+    [class.btn-default]="!isActive(option)"
+    [class.disabled]="isGroupDisabled || option.disabled"
+    [attr.role]="'button'"
+    (click)="selectOption(option, $event)"
+  >
+    <input
+      type="radio"
+      [name]="name"
+      [checked]="isActive(option)"
+      [disabled]="isGroupDisabled || option.disabled"
+      hidden
+    />
+    {{ option.label }}
+  </a>
+</div>
