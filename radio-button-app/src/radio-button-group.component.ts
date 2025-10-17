@@ -6,6 +6,7 @@ export interface RadioOption {
   label: string;
   value: any;
   tooltip?: string;
+  disabled?: boolean;
 }
 
 @Component({
@@ -20,14 +21,14 @@ export interface RadioOption {
         class="btn"
         [class.btn-primary]="isSelected(option.value)"
         [class.btn-default]="!isSelected(option.value)"
-        [class.disabled]="disabled"
+        [class.disabled]="disabled || option.disabled"
         [attr.title]="option.tooltip || null"
-        [attr.aria-disabled]="disabled ? true : null"
+        [attr.aria-disabled]="(disabled || option.disabled) ? true : null"
         [attr.aria-pressed]="isSelected(option.value)"
-        [attr.tabindex]="disabled ? -1 : 0"
-        (click)="selectOption(option.value)"
-        (keydown.enter)="selectOption(option.value)"
-        (keydown.space)="selectOption(option.value); $event.preventDefault()"
+        [attr.tabindex]="(disabled || option.disabled) ? -1 : 0"
+        (click)="selectOption(option)"
+        (keydown.enter)="selectOption(option)"
+        (keydown.space)="selectOption(option); $event.preventDefault()"
       >
         {{ option.label }}
       </a>
@@ -70,11 +71,12 @@ export class RadioButtonGroupComponent implements ControlValueAccessor {
     return this.value === optionValue;
   }
 
-  selectOption(value: any): void {
-    if (this.disabled) {
+  selectOption(option: RadioOption): void {
+    if (this.disabled || option?.disabled) {
       return;
     }
 
+    const value = option.value;
     this.value = value;
     this.onChange(value);
     this.onTouched();

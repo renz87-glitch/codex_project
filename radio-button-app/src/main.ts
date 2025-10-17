@@ -56,6 +56,22 @@ import { RadioButtonGroupComponent } from './radio-button-group.component';
           <p class="help-block">Questo gruppo di opzioni è disabilitato</p>
         </div>
       </div>
+
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <h3 class="panel-title">Opzioni miste (alcune disabilitate)</h3>
+        </div>
+        <div class="panel-body">
+          <app-radio-button-group
+            [options]="mixedOptions"
+            [(ngModel)]="selectedMixed"
+          ></app-radio-button-group>
+          <div class="alert alert-info" style="margin-top: 15px;" role="alert">
+            Selezione: <strong>{{ selectedMixed || 'Nessuna' }}</strong>
+          </div>
+          <p class="help-block">Alcune opzioni sono disabilitate per mostrare il comportamento misto.</p>
+        </div>
+      </div>
     </div>
   `,
 })
@@ -63,6 +79,7 @@ export class App {
   selectedSize: string = '';
   selectedColor: string = '';
   selectedDisabled: string = '';
+  selectedMixed: string = '';
 
   sizeOptions = [
     { label: 'Piccolo', value: 'S', tooltip: 'Taglia S: piccola' },
@@ -81,6 +98,13 @@ export class App {
   disabledOptions = [
     { label: 'Opzione 1', value: '1', tooltip: 'Tooltip disabilitato' },
     { label: 'Opzione 2', value: '2', tooltip: 'Tooltip disabilitato' }
+  ];
+
+  mixedOptions = [
+    { label: 'Standard', value: 'std', tooltip: 'Opzione attiva' },
+    { label: 'Premium', value: 'prem', tooltip: 'Opzione non disponibile', disabled: true },
+    { label: 'Business', value: 'biz' },
+    { label: 'Enterprise', value: 'ent', disabled: true }
   ];
 }
 
