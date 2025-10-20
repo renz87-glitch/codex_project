@@ -57,8 +57,9 @@ export interface RadioOption {
     </div>
   `,
   styles: [`
-    .btn-group .btn {
-      margin-right: -1px;
+    /* Prevent hairline gaps between adjacent buttons */
+    .btn-group > .btn + .btn {
+      margin-left: -1px;
     }
 
     .btn-group.disabled,
