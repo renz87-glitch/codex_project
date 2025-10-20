@@ -15,7 +15,7 @@ export interface RadioOption {
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="btn-group" role="group" [class.disabled]="disabled" [attr.aria-disabled]="disabled ? 'true' : null" [attr.aria-required]="required ? 'true' : null" [attr.aria-invalid]="isAriaInvalid() ? 'true' : null">
+    <div class="btn-group" role="group" [class.disabled]="disabled" [class.danger-active]="isInvalidActiveSelection()" [attr.aria-disabled]="disabled ? 'true' : null" [attr.aria-required]="required ? 'true' : null" [attr.aria-invalid]="isAriaInvalid() ? 'true' : null">
       <a
         *ngFor="let option of options"
         href="javascript:void(0)"
@@ -74,7 +74,17 @@ export interface RadioOption {
       opacity: 0.65;
     }
 
-    /* No outline; when invalid the active button switches to btn-danger via bindings */
+    /* When selection is invalid, draw a continuous danger border around the group */
+    .btn-group.danger-active .btn {
+      border-top-color: #d43f3a !important;   /* btn-danger border color */
+      border-bottom-color: #d43f3a !important;
+    }
+    .btn-group.danger-active .btn:first-child {
+      border-left-color: #d43f3a !important;
+    }
+    .btn-group.danger-active .btn:last-child {
+      border-right-color: #d43f3a !important;
+    }
   `],
   providers: [
     {
@@ -117,6 +127,13 @@ export class RadioButtonGroupComponent implements ControlValueAccessor, Validato
       }
     }
     return this.value === optionValue;
+  }
+
+  private hasAnySelection(): boolean {
+    const someOption = this.options?.some(opt => this.isSelected(opt.value)) || false;
+    if (someOption) return true;
+    const isNullish = (v: any) => v === null || v === undefined || (this.notDefinedTreatEmptyString && v === '');
+    return !!this.showNotDefined && isNullish(this.value) && isNullish(this.notDefinedValue);
   }
 
   selectOption(option: RadioOption): void {
@@ -191,4 +208,9 @@ export class RadioButtonGroupComponent implements ControlValueAccessor, Validato
     if (!this.required) return false;
     return !this.hasSelection();
   }
+
+  isInvalidActiveSelection(): boolean {
+    return !!this.required && this.hasAnySelection() && !this.hasSelection();
+  }
 }
+
