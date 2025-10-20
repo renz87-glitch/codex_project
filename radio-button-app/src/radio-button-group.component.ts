@@ -1,4 +1,4 @@
-import { Component, Input, forwardRef, OnChanges, SimpleChanges } from '@angular/core';
+﻿import { Component, Input, forwardRef, OnChanges, SimpleChanges } from '@angular/core';
 import { AbstractControl, ControlValueAccessor, NG_VALUE_ACCESSOR, NG_VALIDATORS, ValidationErrors, Validator } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -14,6 +14,10 @@ export interface RadioOption {
   selector: 'app-radio-button-group',
   standalone: true,
   imports: [CommonModule],
+  // Template events:
+  // - (click): mouse selection
+  // - (keydown.enter): keyboard selection with Enter
+  // - (keydown.space): keyboard selection with Space (preventDefault to avoid scroll)
   template: `
     <div class="btn-group" role="group" [class.disabled]="disabled" [class.danger-active]="isInvalidActiveSelection()" [attr.aria-disabled]="disabled ? 'true' : null" [attr.aria-required]="required ? 'true' : null" [attr.aria-invalid]="isAriaInvalid() ? 'true' : null">
       <a
@@ -57,7 +61,7 @@ export interface RadioOption {
     </div>
   `,
   styles: [`
-    /* Prevent hairline gaps between adjacent buttons */
+    /* Evita micro-spazi tra bottoni adiacenti (hairline) */
     .btn-group > .btn + .btn {
       margin-left: -1px;
     }
@@ -67,14 +71,14 @@ export interface RadioOption {
       cursor: not-allowed;
     }
 
-    /* Rely on Bootstrap's btn-default/btn-primary for active state */
+    /* Usiamo direttamente le classi Bootstrap per gli stati attivo/inattivo */
 
     .btn.disabled {
       cursor: not-allowed;
       opacity: 0.65;
     }
 
-    /* When selection is invalid, draw a continuous danger border around the group */
+    /* Se la selezione è non valida, disegniamo un bordo rosso continuo intorno al gruppo ereditando i bordi di btn-danger. */
     .btn-group.danger-active .btn {
       border-top-color: #d43f3a !important;   /* btn-danger border color */
       border-bottom-color: #d43f3a !important;
@@ -100,24 +104,33 @@ export interface RadioOption {
   ]
 })
 export class RadioButtonGroupComponent implements ControlValueAccessor, Validator, OnChanges {
+  // Options to render
   @Input() options: RadioOption[] = [];
   @Input() disabled = false;
+  // If true, must have a valid selection (not n.d. and not invalid)
   @Input() required = false;
+  // Show trailing "not defined" option
   @Input() showNotDefined = false;
+  // Label/tooltip/value for the "not defined" option
   @Input() notDefinedLabel: string = 'n.d.';
   @Input() notDefinedTooltip: string = 'Non definito';
   @Input() notDefinedValue: any = null;
+  // Treat empty string as not defined
   @Input() notDefinedTreatEmptyString: boolean = false;
+  // Explicit invalid values (fail required)
   @Input() invalidValues: any[] = [];
 
+  // Current value and CVA callbacks
   value: any = null;
   onChange: (value: any) => void = () => {};
   onTouched: () => void = () => {};
   private onValidatorChange: () => void = () => {};
 
-  // Note: Angular già applica le classi ng-* sull'host quando usato con ngModel/FormControlName.
+  // Note: Angular già  applica le classi ng-* sull'host quando usato con ngModel/FormControlName.
   // Evitiamo di iniettare NgControl per scongiurare cicli DI.
 
+  // Returns true if the given optionValue is currently selected.
+  // For the n.d. option, treat null/undefined (and optionally '') as equivalent
   isSelected(optionValue: any): boolean {
     // Special handling for not-defined option: treat null/undefined (and optionally empty string) as equivalent
     if (this.showNotDefined) {
@@ -129,6 +142,7 @@ export class RadioButtonGroupComponent implements ControlValueAccessor, Validato
     return this.value === optionValue;
   }
 
+  // True if there is any selection (regular option or n.d.)
   private hasAnySelection(): boolean {
     const someOption = this.options?.some(opt => this.isSelected(opt.value)) || false;
     if (someOption) return true;
@@ -136,6 +150,7 @@ export class RadioButtonGroupComponent implements ControlValueAccessor, Validato
     return !!this.showNotDefined && isNullish(this.value) && isNullish(this.notDefinedValue);
   }
 
+  // Handle selection from click/keyboard on a regular option
   selectOption(option: RadioOption): void {
     if (this.disabled || option?.disabled) {
       return;
@@ -147,22 +162,27 @@ export class RadioButtonGroupComponent implements ControlValueAccessor, Validato
     this.onTouched();
   }
 
+  // CVA: set external value
   writeValue(value: any): void {
     this.value = value;
   }
 
+  // CVA: register onChange
   registerOnChange(fn: any): void {
     this.onChange = fn;
   }
 
+  // CVA: register onTouched
   registerOnTouched(fn: any): void {
     this.onTouched = fn;
   }
 
+  // CVA: enable/disable control
   setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
   }
 
+  // Shortcut to select the trailing n.d. option
   selectNotDefined(): void {
     this.selectOption({ label: this.notDefinedLabel, value: this.notDefinedValue } as any);
   }
@@ -179,12 +199,14 @@ export class RadioButtonGroupComponent implements ControlValueAccessor, Validato
     this.onValidatorChange = fn;
   }
 
+  // Re-run validator when required changes
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['required']) {
       this.onValidatorChange();
     }
   }
 
+  // True if the current selection is valid for required
   private hasSelection(): boolean {
     const selectedValue = this.value;
     // Check if one of the options is selected and valid
@@ -204,13 +226,17 @@ export class RadioButtonGroupComponent implements ControlValueAccessor, Validato
     return false;
   }
 
+  // Invalid state used for ARIA and theming
   isAriaInvalid(): boolean {
     if (!this.required) return false;
     return !this.hasSelection();
   }
 
+  // True when there is a selection but it is invalid (to propagate danger border)
   isInvalidActiveSelection(): boolean {
     return !!this.required && this.hasAnySelection() && !this.hasSelection();
   }
 }
+
+
 
