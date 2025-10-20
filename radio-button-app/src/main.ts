@@ -29,7 +29,7 @@ import { RadioButtonGroupComponent } from './radio-button-group.component';
           ></app-radio-button-group>
           </form>
           <div class="alert alert-info" style="margin-top: 15px;" role="alert">
-            Dimensione selezionata: <strong>{{ selectedSize || 'Nessuna' }}</strong>
+            Dimensione selezionata: <strong>{{ selectedSize ?? 'Nessuna' }}</strong>
           </div>
           <div *ngIf="!form1.valid" class="alert alert-danger" style="margin-top: 15px;" role="alert">
             Form non valido
@@ -49,7 +49,7 @@ import { RadioButtonGroupComponent } from './radio-button-group.component';
             [showNotDefined]="true"
           ></app-radio-button-group>
           <div class="alert alert-success" style="margin-top: 15px;" role="alert">
-            Colore selezionato: <strong>{{ selectedColor || 'Nessuno' }}</strong>
+            Colore selezionato: <strong>{{ selectedColor ?? 'Nessuno' }}</strong>
           </div>
         </div>
       </div>
@@ -80,12 +80,64 @@ import { RadioButtonGroupComponent } from './radio-button-group.component';
             name="mixed"
           ></app-radio-button-group>
           <div class="alert alert-info" style="margin-top: 15px;" role="alert">
-            Selezione: <strong>{{ selectedMixed || 'Nessuna' }}</strong>
+            Selezione: <strong>{{ selectedMixed ?? 'Nessuna' }}</strong>
           </div>
           <p class="help-block">Alcune opzioni sono disabilitate per mostrare il comportamento misto.</p>
         </div>
       </div>
+
+      <div class="panel panel-danger">
+        <div class="panel-heading">
+          <h3 class="panel-title">Opzioni con regole invalid (tema rosso)</h3>
+        </div>
+        <div class="panel-body">
+          <form ngNativeValidate #form3="ngForm">
+          <app-radio-button-group
+            [options]="invalidOptions"
+            [(ngModel)]="selectedInvalid"
+            name="invalid"
+            [required]="true"
+            [showNotDefined]="true"
+            [invalidValues]="['legacy']"
+          ></app-radio-button-group>
+          </form>
+          <div class="alert alert-warning" style="margin-top: 15px;" role="alert">
+            Selezione: <strong>{{ selectedInvalid ?? 'Nessuna' }}</strong>
+          </div>
+          <p class="help-block">
+            Se selezioni un'opzione non valida (es. "Legacy"), il bottone attivo diventa rosso (btn-danger) e il form resta non valido.
+          </p>
+          <div *ngIf="!form3.valid" class="alert alert-danger" style="margin-top: 15px;" role="alert">
+            Form non valido (required + valore non valido)
+          </div>
+        </div>
+      </div>
+      
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Check boolean</h3>
+        </div>
+        <div class="panel-body">
+          <form ngNativeValidate #form2="ngForm">
+          <app-radio-button-group
+            [options]="boolOptions"
+            [(ngModel)]="selectedBool"
+            name="bool"
+            [required]="true"
+            [showNotDefined]="true"
+          ></app-radio-button-group>
+          </form>
+          <div class="alert alert-info" style="margin-top: 15px;" role="alert">
+            Valore selezionato: <strong>{{ selectedBool ?? 'Nessuna' }}</strong>
+          </div>
+          <div *ngIf="!form2.valid" class="alert alert-danger" style="margin-top: 15px;" role="alert">
+            Form non valido
+          </div>
+        </div>
+      </div> 
     </div>
+
+    
   `,
 })
 export class App {
@@ -93,6 +145,8 @@ export class App {
   selectedColor: any = null;      // null per preselezionare "n.d."
   selectedDisabled: any = null;
   selectedMixed: any = null;
+  selectedBool: any = null;
+  selectedInvalid: any = null;
 
   sizeOptions = [
     { label: 'Piccolo', value: 'S', tooltip: 'Taglia S: piccola' },
@@ -118,6 +172,17 @@ export class App {
     { label: 'Premium', value: 'prem', tooltip: 'Opzione non disponibile', disabled: true },
     { label: 'Business', value: 'biz' },
     { label: 'Enterprise', value: 'ent', disabled: true }
+  ];
+
+  boolOptions = [
+    { label: 'Si', value: true, tooltip: 'Acconsento' },
+    { label: 'No', value: false, tooltip: 'Non acconsento' },    
+  ];
+
+  invalidOptions = [
+    { label: 'Standard', value: 'std' },
+    { label: 'Legacy', value: 'legacy', tooltip: 'Non supportato', invalid: true },
+    { label: 'Modern', value: 'modern' }
   ];
 }
 

@@ -7,6 +7,7 @@ export interface RadioOption {
   value: any;
   tooltip?: string;
   disabled?: boolean;
+  invalid?: boolean;
 }
 
 @Component({
@@ -19,7 +20,8 @@ export interface RadioOption {
         *ngFor="let option of options"
         href="javascript:void(0)"
         class="btn"
-        [class.btn-primary]="isSelected(option.value)"
+        [class.btn-primary]="isSelected(option.value) && !isAriaInvalid()"
+        [class.btn-danger]="isSelected(option.value) && isAriaInvalid()"
         [class.btn-default]="!isSelected(option.value)"
         [class.disabled]="disabled || option.disabled"
         [style.cursor]="(disabled || option.disabled) ? 'not-allowed' : null"
@@ -37,7 +39,8 @@ export interface RadioOption {
         *ngIf="showNotDefined"
         href="javascript:void(0)"
         class="btn"
-        [class.btn-primary]="isSelected(notDefinedValue)"
+        [class.btn-primary]="isSelected(notDefinedValue) && !isAriaInvalid()"
+        [class.btn-danger]="isSelected(notDefinedValue) && isAriaInvalid()"
         [class.btn-default]="!isSelected(notDefinedValue)"
         [class.disabled]="disabled"
         [style.cursor]="disabled ? 'not-allowed' : null"
@@ -69,6 +72,8 @@ export interface RadioOption {
       cursor: not-allowed;
       opacity: 0.65;
     }
+
+    /* No outline; when invalid the active button switches to btn-danger via bindings */
   `],
   providers: [
     {
@@ -92,6 +97,7 @@ export class RadioButtonGroupComponent implements ControlValueAccessor, Validato
   @Input() notDefinedTooltip: string = 'Non definito';
   @Input() notDefinedValue: any = null;
   @Input() notDefinedTreatEmptyString: boolean = false;
+  @Input() invalidValues: any[] = [];
 
   value: any = null;
   onChange: (value: any) => void = () => {};
@@ -162,9 +168,22 @@ export class RadioButtonGroupComponent implements ControlValueAccessor, Validato
   }
 
   private hasSelection(): boolean {
-    const baseSelected = this.options?.some(opt => this.isSelected(opt.value)) || false;
-    const ndSelected = !!this.showNotDefined && this.isSelected(this.notDefinedValue);
-    return baseSelected || ndSelected;
+    const selectedValue = this.value;
+    // Check if one of the options is selected and valid
+    const selectedOption = this.options?.find(opt => this.isSelected(opt.value));
+    if (selectedOption) {
+      if (selectedOption.invalid) return false;
+      if (this.invalidValues && this.invalidValues.some(v => v === selectedValue)) return false;
+      return true;
+    }
+    // Handle not-defined selection
+    const isNullish = (v: any) => v === null || v === undefined || (this.notDefinedTreatEmptyString && v === '');
+    const ndSelected = !!this.showNotDefined && isNullish(selectedValue) && isNullish(this.notDefinedValue);
+    if (ndSelected) {
+      // "n.d." does not satisfy required
+      return !this.required ? true : false;
+    }
+    return false;
   }
 
   isAriaInvalid(): boolean {
