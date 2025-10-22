@@ -1,13 +1,28 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { bootstrapApplication } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
-import { RadioButtonGroupComponent } from './radio-button-group.component';
+import { Component } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { bootstrapApplication } from "@angular/platform-browser";
+import { FormsModule } from "@angular/forms";
+import { TextOnlyNumberDirective, NumericValidationMode } from "./text-only-number.directive";
+import { RadioButtonGroupComponent } from "./radio-button-group.component";
 
 @Component({
-  selector: 'app-root',
+  selector: "app-root",
   standalone: true,
-  imports: [CommonModule, FormsModule, RadioButtonGroupComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RadioButtonGroupComponent,
+    TextOnlyNumberDirective,
+  ],
+  styles: `
+    .ng-valid[required]:not(app-radio-button-group),
+    .ng-valid.required:not(app-radio-button-group) {
+       border-left: 5px solid #42a948 !important; /* green */
+    }
+    .ng-invalid:not(form):not(app-radio-button-group) {
+       border-left: 5px solid #a94442 !important; /* red */
+    }
+  `,
   template: `
     <div class="container">
       <div class="page-header">
@@ -20,18 +35,24 @@ import { RadioButtonGroupComponent } from './radio-button-group.component';
         </div>
         <div class="panel-body">
           <form ngNativeValidate #form1="ngForm">
-          <app-radio-button-group
-            [options]="sizeOptions"
-            [(ngModel)]="selectedSize"
-            name="size"
-            [required]="true"
-            [showNotDefined]="true"
-          ></app-radio-button-group>
+            <app-radio-button-group
+              [options]="sizeOptions"
+              [(ngModel)]="selectedSize"
+              name="size"
+              [required]="true"
+              [showNotDefined]="true"
+            ></app-radio-button-group>
           </form>
           <div class="alert alert-info" style="margin-top: 15px;" role="alert">
-            Dimensione selezionata: <strong>{{ selectedSize ?? 'Nessuna' }}</strong>
+            Dimensione selezionata:
+            <strong>{{ selectedSize ?? "Nessuna" }}</strong>
           </div>
-          <div *ngIf="!form1.valid" class="alert alert-danger" style="margin-top: 15px;" role="alert">
+          <div
+            *ngIf="!form1.valid"
+            class="alert alert-danger"
+            style="margin-top: 15px;"
+            role="alert"
+          >
             Form non valido
           </div>
         </div>
@@ -48,8 +69,13 @@ import { RadioButtonGroupComponent } from './radio-button-group.component';
             name="color"
             [showNotDefined]="true"
           ></app-radio-button-group>
-          <div class="alert alert-success" style="margin-top: 15px;" role="alert">
-            Colore selezionato: <strong>{{ selectedColor ?? 'Nessuno' }}</strong>
+          <div
+            class="alert alert-success"
+            style="margin-top: 15px;"
+            role="alert"
+          >
+            Colore selezionato:
+            <strong>{{ selectedColor ?? "Nessuno" }}</strong>
           </div>
         </div>
       </div>
@@ -80,9 +106,12 @@ import { RadioButtonGroupComponent } from './radio-button-group.component';
             name="mixed"
           ></app-radio-button-group>
           <div class="alert alert-info" style="margin-top: 15px;" role="alert">
-            Selezione: <strong>{{ selectedMixed ?? 'Nessuna' }}</strong>
+            Selezione: <strong>{{ selectedMixed ?? "Nessuna" }}</strong>
           </div>
-          <p class="help-block">Alcune opzioni sono disabilitate per mostrare il comportamento misto.</p>
+          <p class="help-block">
+            Alcune opzioni sono disabilitate per mostrare il comportamento
+            misto.
+          </p>
         </div>
       </div>
 
@@ -92,97 +121,179 @@ import { RadioButtonGroupComponent } from './radio-button-group.component';
         </div>
         <div class="panel-body">
           <form ngNativeValidate #form3="ngForm">
-          <app-radio-button-group
-            [options]="invalidOptions"
-            [(ngModel)]="selectedInvalid"
-            name="invalid"
-            [required]="true"
-            [showNotDefined]="true"
-            [invalidValues]="['legacy']"
-          ></app-radio-button-group>
+            <app-radio-button-group
+              [options]="invalidOptions"
+              [(ngModel)]="selectedInvalid"
+              name="invalid"
+              [required]="true"
+              [showNotDefined]="true"
+              [invalidValues]="['legacy']"
+            ></app-radio-button-group>
           </form>
-          <div class="alert alert-warning" style="margin-top: 15px;" role="alert">
-            Selezione: <strong>{{ selectedInvalid ?? 'Nessuna' }}</strong>
+          <div
+            class="alert alert-warning"
+            style="margin-top: 15px;"
+            role="alert"
+          >
+            Selezione: <strong>{{ selectedInvalid ?? "Nessuna" }}</strong>
           </div>
           <p class="help-block">
-            Se selezioni un'opzione non valida (es. "Legacy"), il bottone attivo diventa rosso (btn-danger) e il form resta non valido.
+            Se selezioni un'opzione non valida (es. "Legacy"), il bottone attivo
+            diventa rosso (btn-danger) e il form resta non valido.
           </p>
-          <div *ngIf="!form3.valid" class="alert alert-danger" style="margin-top: 15px;" role="alert">
+          <div
+            *ngIf="!form3.valid"
+            class="alert alert-danger"
+            style="margin-top: 15px;"
+            role="alert"
+          >
             Form non valido (required + valore non valido)
           </div>
         </div>
       </div>
-      
+
       <div class="panel panel-default">
         <div class="panel-heading">
           <h3 class="panel-title">Check boolean</h3>
         </div>
         <div class="panel-body">
           <form ngNativeValidate #form2="ngForm">
-          <app-radio-button-group
-            [options]="boolOptions"
-            [(ngModel)]="selectedBool"
-            name="bool"
-            [required]="true"
-            [showNotDefined]="true"
-          ></app-radio-button-group>
+            <app-radio-button-group
+              [options]="boolOptions"
+              [(ngModel)]="selectedBool"
+              name="bool"
+              [required]="true"
+              [showNotDefined]="true"
+            ></app-radio-button-group>
           </form>
           <div class="alert alert-info" style="margin-top: 15px;" role="alert">
-            Valore selezionato: <strong>{{ selectedBool ?? 'Nessuna' }}</strong>
+            Valore selezionato: <strong>{{ selectedBool ?? "Nessuna" }}</strong>
           </div>
-          <div *ngIf="!form2.valid" class="alert alert-danger" style="margin-top: 15px;" role="alert">
+          <div
+            *ngIf="!form2.valid"
+            class="alert alert-danger"
+            style="margin-top: 15px;"
+            role="alert"
+          >
             Form non valido
           </div>
         </div>
-      </div> 
-    </div>
+      </div>
 
-    
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Input personalizzato (CVA + Validator)</h3>
+        </div>
+        <div class="panel-body">
+          <form ngNativeValidate #formInput="ngForm">
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="numberInput1">Numero (required)</label>
+                  <input
+                    id="numberInput1"
+                    appTextOnlyNumber
+                    [(ngModel)]="number1Value"
+                    name="customNumber1"
+                    [required]="true"
+                    [allowNegative]="true"
+                    class="form-control"
+                    placeholder="Obbligatorio con Solo numeris"
+                  />
+                </div>
+              </div>
+
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="numberInput2">Numero (no zero, max 2 decimali, no negativi)</label>
+                  <input
+                    id="numberInput2"
+                    appTextOnlyNumber
+                    [(ngModel)]="number2Value"
+                    name="customNumber2"
+                    [required]="false"
+                    [mode]="NumericValidationMode.NumericZeroForbidden"
+                    [allowNegative]="false"
+                    [maxDecimals]="2"
+                    class="form-control"
+                    placeholder="Facoltativo ma Solo numeri, zero non ammesso, max 2 decimali"
+                  />
+                </div>
+              </div>
+            </div>
+          </form>
+          <div
+            class="alert"
+            [ngClass]="formInput.valid ? 'alert-success' : 'alert-danger'"
+            role="alert"
+            style="margin-top: 15px;"
+          >
+            Stato form:
+            <strong>{{ formInput.valid ? "Valido" : "Non valido" }}</strong>
+            — Obbligatorio: <strong>{{ number1Value || "Vuoto" }}</strong>
+            — Facoltativo: <strong>{{ number2Value || "Vuoto" }}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
   `,
 })
 export class App {
-  selectedSize: any = null;       // null per preselezionare "n.d."
-  selectedColor: any = null;      // null per preselezionare "n.d."
+  selectedSize: any = null; // null per preselezionare "n.d."
+  selectedColor: any = null; // null per preselezionare "n.d."
   selectedDisabled: any = null;
   selectedMixed: any = null;
   selectedBool: any = null;
   selectedInvalid: any = null;
+  number1Value: string = "";
+  number2Value: string = "";
+  NumericValidationMode = NumericValidationMode;
 
   sizeOptions = [
-    { label: 'Piccolo', value: 'S', tooltip: 'Taglia S: piccola' },
-    { label: 'Medio', value: 'M', tooltip: 'Taglia M: media' },
-    { label: 'Grande', value: 'L', tooltip: 'Taglia L: grande' },
-    { label: 'Extra Large', value: 'XL', tooltip: 'Taglia XL: molto grande' }
+    { label: "Piccolo", value: "S", tooltip: "Taglia S: piccola" },
+    { label: "Medio", value: "M", tooltip: "Taglia M: media" },
+    { label: "Grande", value: "L", tooltip: "Taglia L: grande" },
+    { label: "Extra Large", value: "XL", tooltip: "Taglia XL: molto grande" },
   ];
 
   colorOptions = [
-    { label: 'Rosso', value: 'red', tooltip: 'Colore rosso' },
-    { label: 'Blu', value: 'blue', tooltip: 'Colore blu' },
-    { label: 'Verde', value: 'green', tooltip: 'Colore verde' },
-    { label: 'Giallo', value: 'yellow', tooltip: 'Colore giallo' }
+    { label: "Rosso", value: "red", tooltip: "Colore rosso" },
+    { label: "Blu", value: "blue", tooltip: "Colore blu" },
+    { label: "Verde", value: "green", tooltip: "Colore verde" },
+    { label: "Giallo", value: "yellow", tooltip: "Colore giallo" },
   ];
 
   disabledOptions = [
-    { label: 'Opzione 1', value: '1', tooltip: 'Tooltip disabilitato' },
-    { label: 'Opzione 2', value: '2', tooltip: 'Tooltip disabilitato' }
+    { label: "Opzione 1", value: "1", tooltip: "Tooltip disabilitato" },
+    { label: "Opzione 2", value: "2", tooltip: "Tooltip disabilitato" },
   ];
 
   mixedOptions = [
-    { label: 'Standard', value: 'std', tooltip: 'Opzione attiva' },
-    { label: 'Premium', value: 'prem', tooltip: 'Opzione non disponibile', disabled: true },
-    { label: 'Business', value: 'biz' },
-    { label: 'Enterprise', value: 'ent', disabled: true }
+    { label: "Standard", value: "std", tooltip: "Opzione attiva" },
+    {
+      label: "Premium",
+      value: "prem",
+      tooltip: "Opzione non disponibile",
+      disabled: true,
+    },
+    { label: "Business", value: "biz" },
+    { label: "Enterprise", value: "ent", disabled: true },
   ];
 
   boolOptions = [
-    { label: 'Si', value: true, tooltip: 'Acconsento' },
-    { label: 'No', value: false, tooltip: 'Non acconsento' },    
+    { label: "Si", value: true, tooltip: "Acconsento" },
+    { label: "No", value: false, tooltip: "Non acconsento" },
   ];
 
   invalidOptions = [
-    { label: 'Standard', value: 'std' },
-    { label: 'Legacy', value: 'legacy', tooltip: 'Non supportato', invalid: true },
-    { label: 'Modern', value: 'modern' }
+    { label: "Standard", value: "std" },
+    {
+      label: "Legacy",
+      value: "legacy",
+      tooltip: "Non supportato",
+      invalid: true,
+    },
+    { label: "Modern", value: "modern" },
   ];
 }
 
